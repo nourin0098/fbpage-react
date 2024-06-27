@@ -1,17 +1,40 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
 function Signuppage() {
-
-  const [signupStatus, setSignupStatus] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSignup = (event) => {
     event.preventDefault();
-    window.alert('Successfully signed up'); 
-    navigate('/'); // Redirect to the login page
+    if (password !== confirmPassword) {
+      window.alert('Passwords do not match');
+      return;
+    }
+
+    const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
+    const isEmailTaken = existingUsers.some(user => user.email === email);
+
+    if (isEmailTaken) {
+      window.alert('Email is already taken');
+      return;
+    }
+
+    const newUser = {
+      firstName,
+      lastName,
+      email,
+      password
+    };
+
+    localStorage.setItem('users', JSON.stringify([...existingUsers, newUser]));
+    window.alert('Successfully signed up');
+    navigate('/');
   };
 
   return (
@@ -25,6 +48,9 @@ function Signuppage() {
             <div className="mb-4">
               <input
                 type="text"
+                required
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 placeholder="First Name"
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
@@ -32,13 +58,19 @@ function Signuppage() {
             <div className="mb-4">
               <input
                 type="text"
+                required
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 placeholder="Last Name"
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
             <div className="mb-4">
               <input
-                type="text"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email or Phone"
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
@@ -46,6 +78,9 @@ function Signuppage() {
             <div className="mb-4">
               <input
                 type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create Password"
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
@@ -53,6 +88,9 @@ function Signuppage() {
             <div className="mb-4">
               <input
                 type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm Password"
                 className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
